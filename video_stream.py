@@ -4,8 +4,7 @@ import cv2
 WIDTH = 640
 HEIGHT = 640
 
-VID_SOURCE = "sample/vid/pothole3.mp4"
-# VID_SOURCE = "car2.mp4"
+VID_SOURCE = "sample/vid/pothole1.mp4"
 
 
 def main() -> None:
@@ -41,20 +40,23 @@ def main() -> None:
     cv2.destroyAllWindows()
 
 
-def counting_resize() -> None:
+def count_resize() -> dict:
     cap = cv2.VideoCapture(VID_SOURCE)
     assert cap.isOpened(), "Cannot open video source"
 
-    region_points = [(100, 300), (WIDTH - 100, 300)]
+    region_points = [
+        (10, HEIGHT - 100),
+        (WIDTH - 10, HEIGHT - 100),
+        (WIDTH - 10, HEIGHT - 50),
+        (10, HEIGHT - 50),
+    ]
 
     fps = int(cap.get(cv2.CAP_PROP_FPS))
     video_writer = cv2.VideoWriter(
         "result.avi", cv2.VideoWriter_fourcc(*"mp4v"), fps, (WIDTH, HEIGHT)
     )
 
-    counter = solutions.ObjectCounter(
-        show=True, region=region_points, model="runs/detect/train/weights/best.pt"
-    )
+    counter = solutions.ObjectCounter(show=True, region=region_points, model="best.pt")
 
     while cap.isOpened():
         succes, im0 = cap.read()
@@ -77,24 +79,25 @@ def counting_resize() -> None:
     video_writer.release()
     cv2.destroyAllWindows()
 
+    return results.classwise_count
 
-def counting() -> None:
+
+def count() -> dict:
     cap = cv2.VideoCapture(VID_SOURCE)
     assert cap.isOpened(), "Cannot open video source"
-
-    region_points = [(100, 300), (100, 300)]
 
     w, h, fps = (
         int(cap.get(x))
         for x in (cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT, cv2.CAP_PROP_FPS)
     )
+
+    region_points = [(10, h - 200), (w - 10, h - 200), (w - 10, h - 50), (10, h - 50)]
+
     video_writer = cv2.VideoWriter(
         "result.avi", cv2.VideoWriter_fourcc(*"mp4v"), fps, (w, h)
     )
 
-    counter = solutions.ObjectCounter(
-        show=True, region=region_points, model="runs/detect/train/weights/best.pt"
-    )
+    counter = solutions.ObjectCounter(show=True, region=region_points, model="best.pt")
 
     while cap.isOpened():
         succes, im0 = cap.read()
@@ -115,6 +118,13 @@ def counting() -> None:
     video_writer.release()
     cv2.destroyAllWindows()
 
+    return results.classwise_count
+
+
+def analyze(count_info: dict) -> None:
+    pass
+
 
 if __name__ == "__main__":
-    counting_resize()
+    # result = count()
+    analyze({"Lubang": {"in": 31, "out": 0}})
