@@ -214,3 +214,4 @@ runs/
 # Result
 *.avi
 data/
+!web/data
