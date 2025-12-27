@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pemetaan Lubang Jalan - Kota Bandung</title>
+
+    <!-- Leaflet CSS for maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            background: #f8f9fa;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }
+
+        .stat-card h3 {
+            color: #667eea;
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .stat-card p {
+            color: #666;
+            font-size: 1em;
+            font-weight: 500;
+        }
+
+        .section {
+            padding: 40px;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #map {
+            height: 500px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+
+        th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #eee;
+            transition: background 0.3s;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .severity-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .severity-low {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .severity-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .severity-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+        }
+
+        footer p {
+            margin: 5px 0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+            font-size: 1.2em;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            margin: 20px 40px;
+            border-radius: 10px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px 40px;
+            color: #666;
+        }
+
+        .no-data h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #999;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            header p {
+                font-size: 1em;
+            }
+
+            .stats {
+                padding: 20px;
+                gap: 15px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+
+            th, td {
+                padding: 10px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Pemetaan Lubang Jalan</h1>
+            <p>Survei Kondisi Jalan di Kota Bandung</p>
+            <p style="font-size: 0.9em; margin-top: 10px; opacity: 0.9;">Pengolahan Citra Digital - Politeknik Negeri Bandung</p>
+        </header>
+
+        <div class="stats" id="statsContainer">
+            <div class="stat-card">
+                <h3 id="totalPotholes">-</h3>
+                <p></p>Total Lubang</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="totalStreets">-</h3>
+                <p>Ruas Jalan</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="avgPerStreet">-</h3>
+                <p>Rata-rata per Jalan</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="lastUpdate">-</h3>
+                <p>Update Terakhir</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Peta Lokasi Survei</h2>
+            <div id="map"></div>
+            <p style="color: #666; font-size: 0.9em; margin-top: 10px;">
+                <strong>Catatan:</strong> Marker menunjukkan lokasi perkiraan berdasarkan nama jalan.
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>Data Per Ruas Jalan</h2>
+            <div class="table-container">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Jalan</th>
+                            <th>Arah Perekaman</th>
+                            <th>Total Lubang</th>
+                            <th>Kecil</th>
+                            <th>Sedang</th>
+                            <th>Besar</th>
+                            <th>Lubang/Menit</th>
+                            <th>Tanggal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Will be filled by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer>
+            <p><strong>Data hasil survei Pengolahan Citra Digital</strong></p>
+            <p>Politeknik Negeri Bandung | Semester 5 | 2025</p>
+            <p style="margin-top: 15px; font-size: 0.85em; color: #999;">
+                Deteksi menggunakan YOLOv8 - Computer Vision
+            </p>
+        </footer>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // Initialize map centered on Bandung
+        const map = L.map('map').setView([-6.9175, 107.6191], 13);
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+
+        // Coordinates for major streets in Bandung
+        // You can add more coordinates as you survey more streets
+        const streetCoordinates = {
+            'Jl. Ir. H. Juanda': [-6.9147, 107.6098],
+            'Jl. Soekarno-Hatta': [-6.9437, 107.6370],
+            'Jl. Dipatiukur': [-6.8872, 107.6105],
+            'Jl. Dago': [-6.8967, 107.6153],
+            'Jl. Pasteur': [-6.9000, 107.6080],
+            'Jl. Cihampelas': [-6.8932, 107.6075],
+            'Jl. Setiabudi': [-6.8717, 107.5946],
+            'Jl. Sukajadi': [-6.8821, 107.5978],
+            'Jl. Buah Batu': [-6.9437, 107.6370],
+            'Jl. Gatot Subroto': [-6.9175, 107.6191]
+        };
+
+        // Load and display data
+        fetch('data/detections.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Data file not found');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data && data.length > 0) {
+                    displayData(data);
+                } else {
+                    showNoData();
+                }
+            })
+            .catch(error => {
+                console.error('Error loading data:', error);
+                showError(error.message);
+            });
+
+        function displayData(data) {
+            // Calculate statistics
+            const totalPotholes = data.reduce((sum, item) => sum + item.total_lubang, 0);
+            const totalStreets = data.length;
+            const avgPerStreet = (totalPotholes / totalStreets).toFixed(1);
+            const lastUpdate = data.length > 0 ? data[data.length - 1].tanggal : '-';
+
+            // Update stat cards
+            document.getElementById('totalPotholes').textContent = totalPotholes;
+            document.getElementById('totalStreets').textContent = totalStreets;
+            document.getElementById('avgPerStreet').textContent = avgPerStreet;
+            document.getElementById('lastUpdate').textContent = lastUpdate;
+
+            // Populate table
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+
+            data.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td><strong>${item.jalan}</strong></td>
+                    <td>${item.arah}</td>
+                    <td><strong style="color: #667eea; font-size: 1.1em;">${item.total_lubang}</strong></td>
+                    <td><span class="severity-badge severity-low">${item.statistik.kecil}</span></td>
+                    <td><span class="severity-badge severity-medium">${item.statistik.sedang}</span></td>
+                    <td><span class="severity-badge severity-high">${item.statistik.besar}</span></td>
+                    <td>${item.lubang_per_menit}</td>
+                    <td>${item.tanggal}</td>
+                `;
+                tableBody.appendChild(row);
+
+                // Add marker to map
+                const coords = getCoordinates(item.jalan);
+                if (coords) {
+                    const severity = getSeverityLevel(item.total_lubang);
+                    const color = getSeverityColor(severity);
+
+                    const marker = L.marker(coords, {
+                        icon: L.icon({
+                            iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${color}.png`,
+                            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                            iconSize: [25, 41],
+                            iconAnchor: [12, 41],
+                            popupAnchor: [1, -34],
+                            shadowSize: [41, 41]
+                        })
+                    }).addTo(map);
+
+                    marker.bindPopup(`
+                        <div style="font-family: 'Segoe UI', sans-serif;">
+                            <h3 style="margin: 0 0 10px 0; color: #667eea; font-size: 1.1em;">${item.jalan}</h3>
+                            <p style="margin: 5px 0;">Arah: ${item.arah}</p>
+                            <p style="margin: 5px 0;">Total Lubang: <span style="color: #667eea; font-weight: bold;">${item.total_lubang}</span></p>
+                            <p style="margin: 5px 0;">Klasifikasi:</p>
+                            <ul style="margin: 5px 0; padding-left: 20px;">
+                                <li>Kecil: ${item.statistik.kecil}</li>
+                                <li>Sedang: ${item.statistik.sedang}</li>
+                                <li>Besar: ${item.statistik.besar}</li>
+                            </ul>
+                            <p style="margin: 5px 0;">Lubang/Menit: ${item.lubang_per_menit}</p>
+                            <p style="margin: 5px 0; font-size: 0.9em; color: #666;">Tanggal: ${item.tanggal}</p>
+                        </div>
+                    `);
+                }
+            });
+
+            // Adjust map to show all markers
+            if (data.length > 0) {
+                const bounds = [];
+                data.forEach(item => {
+                    const coords = getCoordinates(item.jalan);
+                    if (coords) bounds.push(coords);
+                });
+                if (bounds.length > 0) {
+                    map.fitBounds(bounds, { padding: [50, 50] });
+                }
+            }
+        }
+
+        function getCoordinates(streetName) {
+            // Exact match
+            if (streetCoordinates[streetName]) {
+                return streetCoordinates[streetName];
+            }
+
+            // Partial match
+            for (const [key, value] of Object.entries(streetCoordinates)) {
+                if (streetName.includes(key) || key.includes(streetName)) {
+                    return value;
+                }
+            }
+
+            return null;
+        }
+
+        function getSeverityLevel(potholeCount) {
+            if (potholeCount < 20) return 'low';
+            if (potholeCount < 50) return 'medium';
+            return 'high';
+        }
+
+        function getSeverityColor(severity) {
+            const colorMap = {
+                'low': 'green',
+                'medium': 'orange',
+                'high': 'red'
+            };
+            return colorMap[severity] || 'blue';
+        }
+
+        function showNoData() {
+            const statsContainer = document.getElementById('statsContainer');
+            const tableBody = document.getElementById('tableBody');
+
+            statsContainer.innerHTML = '<div class="no-data"><h3>Belum ada data survei</h3><p>Silakan proses video survei terlebih dahulu menggunakan script Python.</p></div>';
+            tableBody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 40px; color: #999;">Belum ada data</td></tr>';
+        }
+
+        function showError(message) {
+            const container = document.querySelector('.container');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.innerHTML = `
+                <h3>Error Loading Data</h3>
+                <p>${message}</p>
+                <p style="margin-top: 10px; font-size: 0.9em;">Pastikan file <code>data/detections.json</code> tersedia.</p>
+            `;
+            container.insertBefore(errorDiv, container.children[1]);
+        }
+    </script>
+</body>
+</html>
