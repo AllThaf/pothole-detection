@@ -1,0 +1,243 @@
+[
+  {
+    "jalan": "Jl. Kampus Polban",
+    "arah": "Ciwaruga - Sarijadi",
+    "kota": "Bandung",
+    "tanggal": "2025-12-27",
+    "waktu": "21:11:40",
+    "total_lubang": 28,
+    "durasi_video": 141.9,
+    "lubang_per_menit": 11.84,
+    "detail_lubang": [
+      {
+        "id": 1,
+        "timestamp": 39.45,
+        "frame": 1180,
+        "confidence": 0.589,
+        "area": 11944,
+        "severity": "sedang"
+      },
+      {
+        "id": 2,
+        "timestamp": 39.45,
+        "frame": 1180,
+        "confidence": 0.532,
+        "area": 37540,
+        "severity": "besar"
+      },
+      {
+        "id": 3,
+        "timestamp": 42.46,
+        "frame": 1270,
+        "confidence": 0.547,
+        "area": 8495,
+        "severity": "sedang"
+      },
+      {
+        "id": 4,
+        "timestamp": 42.8,
+        "frame": 1280,
+        "confidence": 0.777,
+        "area": 16326,
+        "severity": "besar"
+      },
+      {
+        "id": 5,
+        "timestamp": 46.14,
+        "frame": 1380,
+        "confidence": 0.513,
+        "area": 52873,
+        "severity": "besar"
+      },
+      {
+        "id": 6,
+        "timestamp": 47.14,
+        "frame": 1410,
+        "confidence": 0.729,
+        "area": 264201,
+        "severity": "besar"
+      },
+      {
+        "id": 7,
+        "timestamp": 53.16,
+        "frame": 1590,
+        "confidence": 0.843,
+        "area": 59499,
+        "severity": "besar"
+      },
+      {
+        "id": 8,
+        "timestamp": 55.83,
+        "frame": 1670,
+        "confidence": 0.616,
+        "area": 24705,
+        "severity": "besar"
+      },
+      {
+        "id": 9,
+        "timestamp": 56.84,
+        "frame": 1700,
+        "confidence": 0.786,
+        "area": 88208,
+        "severity": "besar"
+      },
+      {
+        "id": 10,
+        "timestamp": 57.17,
+        "frame": 1710,
+        "confidence": 0.753,
+        "area": 137392,
+        "severity": "besar"
+      },
+      {
+        "id": 11,
+        "timestamp": 57.51,
+        "frame": 1720,
+        "confidence": 0.757,
+        "area": 203152,
+        "severity": "besar"
+      },
+      {
+        "id": 12,
+        "timestamp": 59.85,
+        "frame": 1790,
+        "confidence": 0.712,
+        "area": 36160,
+        "severity": "besar"
+      },
+      {
+        "id": 13,
+        "timestamp": 61.52,
+        "frame": 1840,
+        "confidence": 0.791,
+        "area": 69211,
+        "severity": "besar"
+      },
+      {
+        "id": 14,
+        "timestamp": 61.85,
+        "frame": 1850,
+        "confidence": 0.668,
+        "area": 23138,
+        "severity": "besar"
+      },
+      {
+        "id": 15,
+        "timestamp": 62.19,
+        "frame": 1860,
+        "confidence": 0.861,
+        "area": 48866,
+        "severity": "besar"
+      },
+      {
+        "id": 16,
+        "timestamp": 79.24,
+        "frame": 2370,
+        "confidence": 0.697,
+        "area": 50685,
+        "severity": "besar"
+      },
+      {
+        "id": 17,
+        "timestamp": 94.28,
+        "frame": 2820,
+        "confidence": 0.525,
+        "area": 68591,
+        "severity": "besar"
+      },
+      {
+        "id": 18,
+        "timestamp": 94.95,
+        "frame": 2840,
+        "confidence": 0.664,
+        "area": 128007,
+        "severity": "besar"
+      },
+      {
+        "id": 19,
+        "timestamp": 95.29,
+        "frame": 2850,
+        "confidence": 0.844,
+        "area": 33724,
+        "severity": "besar"
+      },
+      {
+        "id": 20,
+        "timestamp": 95.62,
+        "frame": 2860,
+        "confidence": 0.715,
+        "area": 56181,
+        "severity": "besar"
+      },
+      {
+        "id": 21,
+        "timestamp": 95.62,
+        "frame": 2860,
+        "confidence": 0.588,
+        "area": 15682,
+        "severity": "besar"
+      },
+      {
+        "id": 22,
+        "timestamp": 102.31,
+        "frame": 3060,
+        "confidence": 0.764,
+        "area": 34070,
+        "severity": "besar"
+      },
+      {
+        "id": 23,
+        "timestamp": 103.31,
+        "frame": 3090,
+        "confidence": 0.529,
+        "area": 80121,
+        "severity": "besar"
+      },
+      {
+        "id": 24,
+        "timestamp": 103.98,
+        "frame": 3110,
+        "confidence": 0.551,
+        "area": 59055,
+        "severity": "besar"
+      },
+      {
+        "id": 25,
+        "timestamp": 113.34,
+        "frame": 3390,
+        "confidence": 0.595,
+        "area": 45663,
+        "severity": "besar"
+      },
+      {
+        "id": 26,
+        "timestamp": 113.68,
+        "frame": 3400,
+        "confidence": 0.503,
+        "area": 240336,
+        "severity": "besar"
+      },
+      {
+        "id": 27,
+        "timestamp": 128.72,
+        "frame": 3850,
+        "confidence": 0.643,
+        "area": 77383,
+        "severity": "besar"
+      },
+      {
+        "id": 28,
+        "timestamp": 133.4,
+        "frame": 3990,
+        "confidence": 0.623,
+        "area": 83577,
+        "severity": "besar"
+      }
+    ],
+    "statistik": {
+      "kecil": 0,
+      "sedang": 2,
+      "besar": 26
+    }
+  }
+]
