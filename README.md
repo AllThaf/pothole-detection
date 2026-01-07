@@ -11,6 +11,7 @@ Sistem deteksi dan pemetaan lubang jalan menggunakan YOLOv8 untuk survei kondisi
 Proyek ini menggunakan deep learning (YOLOv8) untuk mendeteksi lubang jalan dari video rekaman. Hasil deteksi ditampilkan dalam bentuk website interaktif dengan peta dan statistik.
 
 ### Fitur Utama
+
 - Deteksi lubang jalan otomatis dari video
 - Klasifikasi tingkat keparahan (kecil, sedang, besar)
 - Deduplication (menghindari hitung ganda)
@@ -31,10 +32,11 @@ pip install -r requirements.txt
 ### 2. Proses Video
 
 ```bash
-python process_video.py
+python main.py
 ```
 
 Masukkan informasi yang diminta:
+
 - Path video (contoh: `sample/vid/pothole1.mp4`)
 - Nama jalan (contoh: `Jl. Ir. H. Juanda`)
 - Arah perekaman (contoh: `Dago Utara - Dago Selatan`)
@@ -42,7 +44,7 @@ Masukkan informasi yang diminta:
 
 ### 3. Lihat Hasil di Website
 
-Buka file `web/index.html` di browser atau deploy ke GitHub Pages.
+Buka file `docs/index.html` di browser atau deploy ke GitHub Pages.
 
 ---
 
@@ -51,9 +53,8 @@ Buka file `web/index.html` di browser atau deploy ke GitHub Pages.
 ```
 pothole-detection/
 ├── best.pt                    # Model YOLOv8 yang sudah dilatih
-├── process_video.py           # Script utama untuk memproses video
 ├── train.py                   # Script untuk melatih model (opsional)
-├── main.py                    # Script lama (sudah tidak digunakan)
+├── main.py                    # Script utama untuk memproses video
 ├── test.py                    # Script testing (opsional)
 ├── requirements.txt           # Dependencies Python
 ├── README.md                  # Dokumentasi ini
@@ -61,10 +62,10 @@ pothole-detection/
 ├── data/                      # Data hasil deteksi (lokal)
 │   └── detections.json
 │
-├── web/                       # Website untuk menampilkan hasil
-│   ├── index.html            # Halaman utama website
+├── docs/                      # Website untuk menampilkan hasil
+│   ├── index.html             # Halaman utama website
 │   └── data/
-│       └── detections.json   # Data untuk website
+│       └── detections.json    # Data untuk website
 │
 └── sample/                    # Contoh video/gambar untuk testing
     ├── vid/
@@ -80,19 +81,20 @@ pothole-detection/
 Proses satu video secara interaktif:
 
 ```bash
-python process_video.py
+python main.py
 ```
 
 Pilih opsi `1` untuk interactive mode, lalu ikuti instruksi.
 
 **Output:**
+
 - Data disimpan ke `data/detections.json`
-- Data juga disimpan ke `web/data/detections.json` (jika folder web ada)
+- Data juga disimpan ke `docs/data/detections.json` (jika folder docs ada)
 - Summary ditampilkan di terminal
 
 ### Mode 2: Batch Processing
 
-Untuk memproses banyak video sekaligus, edit file `process_video.py`:
+Untuk memproses banyak video sekaligus, edit file `main.py`:
 
 ```python
 videos_to_process = [
@@ -115,7 +117,7 @@ videos_to_process = [
 Lalu jalankan:
 
 ```bash
-python process_video.py
+python main.py
 ```
 
 Pilih opsi `2` untuk batch mode.
@@ -130,10 +132,10 @@ Buka langsung file HTML di browser:
 
 ```bash
 # Windows
-start web/index.html
+start docs/index.html
 
 # Mac/Linux
-open web/index.html
+open docs/index.html
 ```
 
 ### Opsi 2: GitHub Pages (Gratis & Online)
@@ -150,11 +152,12 @@ git push -u origin main
 ```
 
 2. **Aktifkan GitHub Pages:**
+
    - Buka repository di GitHub
    - Settings -> Pages
    - Source: Deploy from a branch
    - Branch: `main`
-   - Folder: `/web`
+   - Folder: `/docs`
    - Save
 
 3. **Akses website:**
@@ -166,7 +169,7 @@ git push -u origin main
 Setelah memproses video baru:
 
 ```bash
-git add web/data/detections.json
+git add docs/data/detections.json
 git commit -m "Update data - Jl. [nama jalan]"
 git push
 ```
@@ -218,16 +221,19 @@ File `detections.json` berisi array of objects dengan struktur:
 Untuk hasil deteksi terbaik:
 
 1. **Kualitas Video:**
+
    - Resolusi minimal 720p (1080p lebih baik)
    - Frame rate minimal 30 fps
    - Lighting yang baik (hindari malam hari)
 
 2. **Posisi Kamera:**
+
    - Dashcam atau pegang di depan kendaraan
    - Arahkan ke jalan (jangan terlalu miring)
    - Tinggi ideal: 1-1.5 meter dari tanah
 
 3. **Kecepatan Kendaraan:**
+
    - Kecepatan rendah-sedang (20-40 km/jam)
    - Kecepatan terlalu tinggi = lubang bisa terlewat
    - Kecepatan terlalu rendah = file video besar
@@ -244,6 +250,7 @@ Untuk hasil deteksi terbaik:
 ### Error: "Cannot open video"
 
 **Solusi:**
+
 - Pastikan path video benar
 - Cek apakah file video corrupt
 - Format yang didukung: MP4, AVI, MOV
@@ -251,26 +258,29 @@ Untuk hasil deteksi terbaik:
 ### Error: "Model file not found"
 
 **Solusi:**
+
 - Pastikan file `best.pt` ada di root directory
-- Jika tidak ada, copy dari folder training: `runs/detect/train/weights/best.pt`
 
 ### Video proses lambat
 
 **Solusi:**
+
 - Default: proses setiap 10 frame (sudah optimal)
-- Untuk lebih cepat, ubah `process_every = 10` menjadi `15` atau `20` di `process_video.py`
+- Untuk lebih cepat, ubah `process_every = 10` menjadi `15` atau `20` di `main.py`
 - Trade-off: deteksi bisa kurang akurat
 
 ### Website tidak menampilkan data
 
 **Solusi:**
-- Pastikan file `web/data/detections.json` ada dan valid
+
+- Pastikan file `docs/data/detections.json` ada dan valid
 - Cek console browser (F12) untuk error
 - Pastikan struktur JSON benar
 
 ### Duplicate detections (lubang sama terdeteksi berkali-kali)
 
 **Solusi:**
+
 - Sudah ada deduplication otomatis (jarak < 100 pixel)
 - Jika masih banyak duplikat, ubah threshold di line:
   ```python
@@ -284,16 +294,19 @@ Untuk hasil deteksi terbaik:
 ### Pembagian Tugas
 
 **Tim 1: Perekaman Video**
+
 - Rekam video jalan yang ditugaskan
 - Format nama file: `{nama_jalan}_{arah}_{tanggal}.mp4`
 - Upload ke shared folder
 
 **Tim 2: Processing**
-- Proses video menggunakan `process_video.py`
+
+- Proses video menggunakan `main.py`
 - Cek hasil deteksi (apakah masuk akal)
 - Commit data ke GitHub
 
 **Tim 3: Website & Dokumentasi**
+
 - Monitor website setelah update
 - Buat laporan/presentasi
 - Screenshot dan dokumentasi
@@ -310,6 +323,7 @@ Untuk hasil deteksi terbaik:
 - [ ] Jl. Buah Batu (2 arah)
 
 **Estimasi waktu:**
+
 - Perekaman: 1-2 hari (parallel)
 - Processing: 2-3 hari (bisa parallel)
 - Deploy & polish: 1 hari
