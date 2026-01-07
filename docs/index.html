@@ -332,18 +332,9 @@
         }).addTo(map);
 
         // Coordinates for major streets in Bandung
-        // You can add more coordinates as you survey more streets
         const streetCoordinates = {
-            'Jl. Ir. H. Juanda': [-6.9147, 107.6098],
-            'Jl. Soekarno-Hatta': [-6.9437, 107.6370],
-            'Jl. Dipatiukur': [-6.8872, 107.6105],
-            'Jl. Dago': [-6.8967, 107.6153],
-            'Jl. Pasteur': [-6.9000, 107.6080],
-            'Jl. Cihampelas': [-6.8932, 107.6075],
-            'Jl. Setiabudi': [-6.8717, 107.5946],
-            'Jl. Sukajadi': [-6.8821, 107.5978],
-            'Jl. Buah Batu': [-6.9437, 107.6370],
-            'Jl. Gatot Subroto': [-6.9175, 107.6191]
+            'Jl. Kampus Polban': [-6.869256431072028, 107.5736753736685],
+            'Jl. Sarimanah': [-6.878975824714226, 107.576949523186]
         };
 
         // Load and display data
@@ -397,11 +388,24 @@
                     <td>${item.tanggal}</td>
                 `;
                 tableBody.appendChild(row);
+            });
 
-                // Add marker to map
-                const coords = getCoordinates(item.jalan);
+            // Group data by street name
+            const groupedData = {};
+            data.forEach(item => {
+                if (!groupedData[item.jalan]) {
+                    groupedData[item.jalan] = [];
+                }
+                groupedData[item.jalan].push(item);
+            });
+
+            // Create markers (one per street)
+            Object.keys(groupedData).forEach(streetName => {
+                const coords = getCoordinates(streetName);
                 if (coords) {
-                    const severity = getSeverityLevel(item.total_lubang);
+                    const surveys = groupedData[streetName];
+                    const totalPotholes = surveys.reduce((sum, s) => sum + s.total_lubang, 0);
+                    const severity = getSeverityLevel(totalPotholes / surveys.length);
                     const color = getSeverityColor(severity);
 
                     const marker = L.marker(coords, {
@@ -415,29 +419,76 @@
                         })
                     }).addTo(map);
 
-                    marker.bindPopup(`
-                        <div style="font-family: 'Segoe UI', sans-serif;">
-                            <h3 style="margin: 0 0 10px 0; color: #667eea; font-size: 1.1em;">${item.jalan}</h3>
-                            <p style="margin: 5px 0;">Arah: ${item.arah}</p>
-                            <p style="margin: 5px 0;">Total Lubang: <span style="color: #667eea; font-weight: bold;">${item.total_lubang}</span></p>
-                            <p style="margin: 5px 0;">Klasifikasi:</p>
-                            <ul style="margin: 5px 0; padding-left: 20px;">
-                                <li>Kecil: ${item.statistik.kecil}</li>
-                                <li>Sedang: ${item.statistik.sedang}</li>
-                                <li>Besar: ${item.statistik.besar}</li>
-                            </ul>
-                            <p style="margin: 5px 0;">Lubang/Menit: ${item.lubang_per_menit}</p>
-                            <p style="margin: 5px 0; font-size: 0.9em; color: #666;">Tanggal: ${item.tanggal}</p>
-                        </div>
-                    `);
+                    // Create popup with navigation
+                    let currentIndex = 0;
+                    const popup = L.popup({ minWidth: 300 });
+                    const streetKey = streetName.replace(/[^a-zA-Z0-9]/g, '_');
+
+                    function updatePopupContent() {
+                        const item = surveys[currentIndex];
+                        const hasMultiple = surveys.length > 1;
+
+                        popup.setContent(`
+                            <div style="font-family: 'Segoe UI', sans-serif;">
+                                <h3 style="margin: 0 0 10px 0; color: #667eea; font-size: 1.1em;">${item.jalan}</h3>
+                                ${hasMultiple ? `<div style="text-align: center; margin-bottom: 10px; padding: 8px; background: #f0f0f0; border-radius: 5px;">
+                                    <button id="prevBtn_${streetKey}" style="background: #667eea; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 10px;">◀</button>
+                                    <span style="font-weight: bold; color: #667eea;">Survei ${currentIndex + 1} dari ${surveys.length}</span>
+                                    <button id="nextBtn_${streetKey}" style="background: #667eea; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-left: 10px;">▶</button>
+                                </div>` : ''}
+                                <p style="margin: 5px 0;"><strong>Arah:</strong> ${item.arah}</p>
+                                <p style="margin: 5px 0;"><strong>Tanggal:</strong> ${item.tanggal} ${item.waktu}</p>
+                                <p style="margin: 5px 0;">Total Lubang: <span style="color: #667eea; font-weight: bold;">${item.total_lubang}</span></p>
+                                <p style="margin: 5px 0;">Klasifikasi:</p>
+                                <ul style="margin: 5px 0; padding-left: 20px;">
+                                    <li>Kecil: ${item.statistik.kecil}</li>
+                                    <li>Sedang: ${item.statistik.sedang}</li>
+                                    <li>Besar: ${item.statistik.besar}</li>
+                                </ul>
+                                <p style="margin: 5px 0;">Lubang/Menit: ${item.lubang_per_menit}</p>
+                            </div>
+                        `);
+
+                        // Add event listeners after content is set
+                        if (hasMultiple) {
+                            setTimeout(() => {
+                                const prevBtn = document.getElementById(`prevBtn_${streetKey}`);
+                                const nextBtn = document.getElementById(`nextBtn_${streetKey}`);
+
+                                if (prevBtn) {
+                                    prevBtn.addEventListener('click', (e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        currentIndex = (currentIndex - 1 + surveys.length) % surveys.length;
+                                        updatePopupContent();
+                                    });
+                                }
+
+                                if (nextBtn) {
+                                    nextBtn.addEventListener('click', (e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        currentIndex = (currentIndex + 1) % surveys.length;
+                                        updatePopupContent();
+                                    });
+                                }
+                            }, 10);
+                        }
+                    }
+
+                    marker.bindPopup(popup);
+                    marker.on('click', () => {
+                        currentIndex = 0;
+                        updatePopupContent();
+                    });
                 }
             });
 
             // Adjust map to show all markers
-            if (data.length > 0) {
+            if (Object.keys(groupedData).length > 0) {
                 const bounds = [];
-                data.forEach(item => {
-                    const coords = getCoordinates(item.jalan);
+                Object.keys(groupedData).forEach(streetName => {
+                    const coords = getCoordinates(streetName);
                     if (coords) bounds.push(coords);
                 });
                 if (bounds.length > 0) {
